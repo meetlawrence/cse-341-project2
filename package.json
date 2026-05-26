@@ -1,0 +1,26 @@
+{
+  "name": "cse-341-project2",
+  "version": "1.0.0",
+  "description": "My Personal API Creation Project",
+  "homepage": "https://github.com/meetlawrence/cse-341-project2#readme",
+  "bugs": {
+    "url": "https://github.com/meetlawrence/cse-341-project2/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meetlawrence/cse-341-project2.git"
+  },
+  "license": "ISC",
+  "author": "Lawrence Okon",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
