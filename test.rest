@@ -1,0 +1,32 @@
+### Add a New Expense
+POST http://localhost:3000/expenses
+Content-Type: application/json
+
+{
+    "title": "Laptop Purchase",
+    "amount": 1200.00,
+    "category": "Electronics",
+    "description": "New laptop for work",
+    "date": "2023-10-01"
+}
+
+### Get all expenses
+GET http://localhost:3000/expenses
+
+
+### Delete a user
+# Replace the ID below with the ID of the user you want to delete
+DELETE http://localhost:3000/expenses/6a1548798ae44708ece31489
+
+### Update an expense
+# Replace the ID below with the ID of the expense you want to update
+PUT http://localhost:3000/expenses/6a15473e8ae44708ece31488
+Content-Type: application/json
+
+{
+    "title": "Microsoft 365 Subscription",
+    "amount": 35,
+    "category": "Software",
+    "description": "Monthly Microsoft 365 subscription fee",
+    "date": "2025-10-01"
+}
