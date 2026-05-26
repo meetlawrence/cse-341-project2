@@ -2,8 +2,8 @@ const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
     info: {
-        title: 'Expense API', 
-        description: 'Expenses Api'
+        title: 'Personal Expense Tracker API', 
+        description: 'API for managing personal expenses'
     },
     host: 'localhost:3000',
     schemes: ['https', 'http'],

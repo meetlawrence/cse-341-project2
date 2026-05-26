@@ -1,17 +1,37 @@
-### Add a New Expense
-POST http://localhost:3000/expenses
+### Add Nigerian User 1
+POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "title": "Laptop Purchase",
-    "amount": 1200.00,
-    "category": "Electronics",
-    "description": "New laptop for work",
-    "date": "2023-10-01"
+  "firstName": "Chidi",
+  "lastName": "Okonkwo",
+  "email": "chidi.okonkwo@gmail.com",
+  "phoneNumber": "+234-803-555-1234"
 }
 
-### Get all expenses
-GET http://localhost:3000/expenses
+### Add Nigerian User 2
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "firstName": "Amara",
+  "lastName": "Bello",
+  "email": "amara.bello@yahoo.com",
+  "phoneNumber": "+234-815-555-5678"
+}
+
+### Add Nigerian User 3
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "firstName": "Olumide",
+  "lastName": "Adeola",
+  "email": "o.adeola@outlook.com",
+  "phoneNumber": "+234-902-555-9012"
+}
+### Get all users
+GET http://localhost:3000/users
 
 
 ### Delete a user
@@ -20,13 +40,12 @@ DELETE http://localhost:3000/expenses/6a1548798ae44708ece31489
 
 ### Update an expense
 # Replace the ID below with the ID of the expense you want to update
-PUT http://localhost:3000/expenses/6a15473e8ae44708ece31488
+PUT http://localhost:3000/users/6a16299195788c143574b526
 Content-Type: application/json
 
 {
-    "title": "Microsoft 365 Subscription",
-    "amount": 35,
-    "category": "Software",
-    "description": "Monthly Microsoft 365 subscription fee",
-    "date": "2025-10-01"
+    "firstName": "Ebuka",
+    "lastName": "Chinasa",
+    "email": "ebuka.chinasa@byui.edu",
+    "phoneNumber": "+234-906-667-8117"
 }
