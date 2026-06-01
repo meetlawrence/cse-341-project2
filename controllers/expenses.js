@@ -102,7 +102,7 @@ const updateExpense = async (req, res) => {
         
         const response = await mongodb.getDatabase().db().collection('expenses').replaceOne({ _id: expenseId }, expense);
         if (response.modifiedCount > 0) {
-            res.status(204).send();
+            res.status(200).json({ message: 'Expense updated successfully.' });
         } else {
             res.status(404).json({ error: 'Expense not found or no modifications made.' });
         }
