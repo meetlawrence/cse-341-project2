@@ -10,15 +10,17 @@ router.use('/users', require('./users'));
 router.get('/login', passport.authenticate('github'), (req, res) => { });
 
 router.get('/logout', (req, res, next) => {
+    // Tell Passport to log out
     req.logout((err) => {
-        if (err) {
-            return next(err);
-        }
-        req.session.destroy((destroyErr) => {
-            if (destroyErr) {
-                return next(destroyErr);
+        if (err) { return next(err); }
+        
+        // Destroy the Express Session completely to clear req.session.user
+        req.session.destroy((err) => {
+            if (err) {
+                console.log("Error destroying session:", err);
             }
-            res.redirect('/');
+            res.clearCookie('connect.sid'); // Clear the session cookie from the browser
+            res.redirect('/'); 
         });
     });
 });

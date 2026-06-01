@@ -11,16 +11,13 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(session({
-    secret: 'secret',
+    secret: process.env.SESSION_SECRET || 'secret', 
     resave: false,
     saveUninitialized: false
 }));
 
-// This is the basic express session({...}) initialization.
 app.use(passport.initialize());
-// inti passport on every route call
 app.use(passport.session());
-// allow passport to use "express-session" to keep track of the user's session
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -32,15 +29,15 @@ app.use((req, res, next) => {
 });
 app.use(cors({ methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] }));
 app.use(cors({ origin: '*' }));
-app.use('/', require('./routes/index.js'));
 
+// Route handlers
+app.use('/', require('./routes/index.js'));
 
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/github/callback"
+    callbackURL: process.env.CALLBACK_URL || "http://localhost:3000/auth/github/callback"
 }, (accessToken, refreshToken, profile, done) => {
-    
     return done(null, profile);
 }));
 
@@ -52,26 +49,37 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
+// Home Route
 app.get('/', (req, res) => {
     res.send(req.session.user !== undefined ? `Logged in as ${req.session.user.displayName}!` : 'Logged out!');
 });
 
+// This endpoint kicks off the GitHub OAuth process
+app.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
+
 app.get('/auth/github/callback', passport.authenticate('github', {
-    failureRedirect: '/api-docs', session: true }),
+    failureRedirect: '/api-docs', 
+    session: true 
+}),
     (req, res) => {
         req.session.user = req.user;
-        res.redirect('/');
+        
+        req.session.save((err) => {
+            if (err) {
+                console.error(err);
+            }
+            res.redirect('/');
+        });
     }
 );
 
+// Database connection & Server initialization
 mongodb.initDb((err) => {
-  if (err) {
-    console.log('Unable to connect to database!');
-  }
-  else {
-    app.listen(port, () => {
-        console.log(`database is listening and node running on http://localhost:${port}`);
-    });
+    if (err) {
+        console.log('Unable to connect to database!');
+    } else {
+        app.listen(port, () => {
+            console.log(`Database is listening and node running on http://localhost:${port}`);
+        });
     }
 });
-
