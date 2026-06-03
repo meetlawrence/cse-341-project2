@@ -1,6 +1,6 @@
 const swaggerAutogen = require('swagger-autogen')();
 
-const host = process.env.NODE_ENV === 'production' ? 'your-production-url.com' : 'localhost:3000';
+const host = process.env.NODE_ENV === 'production' ? 'cse-341-project2-8htm.onrender.com' : 'localhost:3000';
 
 const schemes = process.env.NODE_ENV === 'production' ? ['https'] : ['http'];
 
