@@ -9,23 +9,12 @@ const cors = require('cors');
 const port = process.env.PORT || 3000;
 const app = express();
 
+// 1. CRITICAL FOR RENDER: Trust proxy must be set at the absolute top
+app.set('trust proxy', 1);
+
 app.use(bodyParser.json());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret', 
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        
-        secure: process.env.NODE_ENV === 'production',
-        // 'lax' works great for local testing; 'none' + secure required for cross-origin production
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-    }
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
+// 2. CORS configuration configuration
 const allowedOrigins = [
     'http://localhost:3000', 
     'https://cse-341-project2-8htm.onrender.com' 
@@ -33,7 +22,6 @@ const allowedOrigins = [
 
 app.use(cors({ 
     origin: function (origin, callback) {
-        // Allows API clients like Postman, Thunder Client, or Swagger UI to pass through
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
             return callback(new Error('CORS policy does not allow access from this origin.'), false);
@@ -44,9 +32,22 @@ app.use(cors({
     credentials: true 
 }));
 
-// Route handlers
-app.use('/', require('./routes/index.js'));
+// 3. Session Middleware Configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'secret', 
+    resave: false,
+    saveUninitialized: false, // Changed to false to avoid empty session initialization bugs
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    }
+}));
 
+// 4. Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 5. Define Passport Strategies & Serialization BEFORE mounting routes
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -63,30 +64,29 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
-// Home Route
+// 6. Home Route Definition
 app.get('/', (req, res) => {
-    res.send(req.session.user !== undefined ? `Logged in as ${req.session.user.displayName}!` : 'Logged out!');
+    res.send(req.session.user !== undefined ? `Logged in as ${req.session.user.displayName || req.session.user.username}!` : 'Logged out!');
 });
 
-// Kicks off the GitHub OAuth process
+// 7. Authentication Routes
 app.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
 
-// GitHub Callback
 app.get('/auth/github/callback', passport.authenticate('github', {
     failureRedirect: '/api-docs', 
     session: true 
-}),
-    (req, res) => {
-        req.session.user = req.user;
-        
-        req.session.save((err) => {
-            if (err) {
-                console.error(err);
-            }
-            res.redirect('/');
-        });
-    }
-);
+}), (req, res) => {
+    req.session.user = req.user;
+    req.session.save((err) => {
+        if (err) {
+            console.error("Session save error:", err);
+        }
+        res.redirect('/');
+    });
+});
+
+// 8. Mount collection and swagger routing engine LAST
+app.use('/', require('./routes/index.js'));
 
 // Database connection & Server initialization
 mongodb.initDb((err) => {
@@ -94,7 +94,7 @@ mongodb.initDb((err) => {
         console.log('Unable to connect to database!');
     } else {
         app.listen(port, () => {
-            console.log(`Database is listening and node running on http://localhost:${port}`);
+            console.log(`Database is listening and node running on port ${port}`);
         });
     }
 });
