@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secret', 
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
-        // Set secure to true if running on HTTPS (Render production)
+        
         secure: process.env.NODE_ENV === 'production',
         // 'lax' works great for local testing; 'none' + secure required for cross-origin production
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
